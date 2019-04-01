@@ -37,7 +37,8 @@ You will need:
   >$ cd dev
   >$ git clone https://github.com/ElizaTWF/apiness.git 
   >$ dir (to check the download) 
-  Delete the package.json (we will recreate it later) 
+ 
+ Delete the package.json (we will recreate it later) 
 
 → Upgrade dev apps in tech stack (node, express, mocha etc)
 -> Commit upgrade to git
