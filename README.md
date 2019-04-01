@@ -17,7 +17,8 @@ You will need:
   Download and install 
   
 ### A free MongoDB account.
-  This will have to be  set up in advance which you will need the login, password and URL details for.
+  This is the database you will be saving all your API data into. 
+  It will have to be  set up in advance which you will need the login, password and URL details for.
   Set up the account from here - https://www.mongodb.com/cloud/atlas
 
 ## Plan 
@@ -74,12 +75,11 @@ A very simple JS API with a basic front end that runs on http://localhost:3000
 TBC
 
 
-
-#Run tests 
+### Run tests 
 From the command line - 
 
 
-#Run tests to fail 
+### Run tests to fail 
 
-#Ignore 
+#### Ignore 
 node_modules are ignored by git => You will have to install node to make this suite run
