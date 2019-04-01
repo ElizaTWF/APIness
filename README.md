@@ -40,8 +40,9 @@ You will need:
  <br>
  Delete the package.json (we will recreate it later) 
 
-→ Upgrade dev apps in tech stack (node, express, mocha etc)
--> Commit upgrade to git
+→ Upgrade dev apps in tech stack (node, express, mocha etc) <br>
+→ Commit upgrade to git<br>
+<br>
 
 ### Create a new package.json pointing at your git repo
   Open the command prompt in the repo
