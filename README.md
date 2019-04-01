@@ -33,11 +33,11 @@ You will need:
   
   Clone from Git Bash / On the command line 
   Open Git Bash 
-  >$ cd C: 
-  >$ cd dev
-  >$ git clone https://github.com/ElizaTWF/apiness.git 
-  >$ dir (to check the download) 
- 
+  >$ cd C: <br>
+  >$ cd dev<br>
+  >$ git clone https://github.com/ElizaTWF/apiness.git <br>
+  >$ dir (to check the download) <br>
+ <br>
  Delete the package.json (we will recreate it later) 
 
 → Upgrade dev apps in tech stack (node, express, mocha etc)
