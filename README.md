@@ -24,13 +24,13 @@ You will need:
 ## Plan 
 
 ### Clone repo
-  Once you have installed GitHub for Desktop
-  → Add files from this Github repo
-  Clone following repo: https://github.com/ElizaTWF/APIness into C:\dev\apiness
-  Delete the package.json (we will recreate it later) 
-  
+  Once you have installed GitHub for Desktop<br>
+    → Add files from this Github repo<br>
+    → Clone following repo: https://github.com/ElizaTWF/APIness into C:\dev\apiness<br>
+    → Delete the package.json (we will recreate it later) <br>
+  <br>
   or 
-  
+  <br>
   Clone from Git Bash / On the command line 
   Open Git Bash 
   >$ cd C: <br>
