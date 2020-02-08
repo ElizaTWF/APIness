@@ -1,6 +1,8 @@
 # APIness
 Quote capture application
 
+This is a training exercise for anyone who wants to know how to build a basic API.
+
 You will need:
 ### Node JS installed globally on your development machine*
   #Install your NodeJS runtime environment 
