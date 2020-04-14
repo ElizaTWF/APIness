@@ -4,6 +4,7 @@
   "description": "Test API to run tests against",
   "main": "server.js",
   "dependencies": {
+<<<<<<< HEAD
     "body-parser": "^1.18.3",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
@@ -11,6 +12,16 @@
   },
   "devDependencies": {
     "nodemon": "^1.18.4"
+=======
+    "body-parser": "^1.19.0",
+    "ejs": "^2.7.4",
+    "event-stream": "^4.0.1",
+    "express": "^4.17.1",
+    "mongodb": "^3.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+>>>>>>> CRUD
   },
   "scripts": {
     "dev": "nodemon server.js",
