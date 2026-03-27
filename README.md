@@ -136,3 +136,8 @@ Open your browser and go to http://localhost:3000 - you should see the quotes pa
 
 #### Ignore
 node_modules are ignored by git => You will have to run npm install to set up the app before running it
+
+
+### Going further
+Once you have the app running, there are a set of instructables showing you how to extend the API further:
+https://drive.google.com/open?id=1DoEtDIBq4cNwWA_hz1jHUPNyDANZ5tq0

@@ -6,7 +6,7 @@ const cookieParser = require('cookie-parser')
 const { doubleCsrf } = require('csrf-csrf')
 const rateLimit = require('express-rate-limit')
 const basicAuth = require('express-basic-auth')
-const MongoClient = require('mongodb').MongoClient
+const { MongoClient, ObjectId } = require('mongodb')
 
 const { generateToken, doubleCsrfProtection } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET,
@@ -63,4 +63,20 @@ app.post('/quotes', auth, submitLimiter, doubleCsrfProtection, (req, res) => {
     console.log('saved to database')
     res.redirect('/')
   })
+})
+
+app.put('/quotes', (req, res) => {
+ db.collection(process.env.COLLECTION_NAME)
+ .findOneAndUpdate({_id: new ObjectId(req.body.id)}, {
+   $set: {
+     name: req.body.name,
+     quote: req.body.quote
+   }
+ }, {
+   sort: {_id: -1},
+   upsert: true
+ }, (err, _result) => {
+   if (err) return res.send(err)
+   res.send('updated')
+ })
 })
