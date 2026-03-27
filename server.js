@@ -34,7 +34,7 @@ app.set('view engine', 'ejs')
 
 app.get('/', (req, res) => {
   db.collection(process.env.COLLECTION_NAME).find().toArray((err, result) => {
-    if (err) return console.log(err)
+    if (err) return res.status(500).send('Error retrieving quotes.')
     res.render('index.ejs', { crud: result, csrfToken: generateToken(req, res) })
   })
 })
@@ -58,25 +58,34 @@ app.post('/quotes', auth, submitLimiter, doubleCsrfProtection, (req, res) => {
     return res.status(400).send('Name and quote are required.')
   }
 
-  db.collection(process.env.COLLECTION_NAME).save({ name, quote }, (err, result) => {
-    if (err) return console.log(err)
+  db.collection(process.env.COLLECTION_NAME).insertOne({ name, quote }, (err, result) => {
+    if (err) return res.status(500).send('Error saving quote.')
     console.log('saved to database')
     res.redirect('/')
   })
 })
 
-app.put('/quotes', (req, res) => {
- db.collection(process.env.COLLECTION_NAME)
- .findOneAndUpdate({_id: new ObjectId(req.body.id)}, {
-   $set: {
-     name: req.body.name,
-     quote: req.body.quote
-   }
- }, {
-   sort: {_id: -1},
-   upsert: true
- }, (err, _result) => {
-   if (err) return res.send(err)
-   res.send('updated')
- })
+app.put('/quotes', auth, doubleCsrfProtection, (req, res) => {
+  const id = typeof req.body.id === 'string' ? req.body.id.trim() : ''
+  const name = typeof req.body.name === 'string' ? req.body.name.trim() : ''
+  const quote = typeof req.body.quote === 'string' ? req.body.quote.trim() : ''
+
+  if (!id || !name || !quote) {
+    return res.status(400).send('Id, name and quote are required.')
+  }
+
+  if (!/^[a-f\d]{24}$/i.test(id)) {
+    return res.status(400).send('Invalid id.')
+  }
+
+  db.collection(process.env.COLLECTION_NAME)
+  .findOneAndUpdate({_id: new ObjectId(id)}, {
+    $set: { name, quote }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, _result) => {
+    if (err) return res.status(500).send('Error updating quote.')
+    res.send('updated')
+  })
 })

@@ -90,7 +90,7 @@ For `APP_USER` and `APP_PASSWORD`, choose credentials to protect the quote submi
 
 ### What you get
 A very simple JS API with a basic front end that runs on http://localhost:3000
--> APIness API able to serve GET and POST requests
+-> APIness API able to serve GET, POST and PUT requests
 -> Front end for data entry
 -> Input validation on all form submissions
 -> CSRF protection on the POST form
