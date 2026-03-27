@@ -19,9 +19,17 @@ You will need:
   Download and install 
   
 ### A free MongoDB account.
-  This is the database you will be saving all your API data into. 
-  It will have to be  set up in advance which you will need the login, password and URL details for.
-  Set up the account from here - https://www.mongodb.com/cloud/atlas
+  This is the database you will be saving all your API data into.
+  It will have to be set up in advance - you will need the connection string, username and password for the next step.
+  Set up a free account from here - https://www.mongodb.com/cloud/atlas
+
+  Once your account is set up:
+  → Create a new cluster (the free tier is fine for this tutorial)
+  → Create a database user with read/write access
+  → Under "Connect" → "Connect your application", select Node.js and copy the connection string
+  It will look something like this:
+  mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/
+  Note: leave off the database name at the end - you will set that separately in your `.env` file in the setup step below
 
 ## Plan 
 
@@ -29,61 +37,102 @@ You will need:
   Once you have installed GitHub for Desktop<br>
     → Add files from this Github repo<br>
     → Clone following repo: https://github.com/ElizaTWF/APIness into C:\dev\apiness<br>
-    → Delete the package.json (we will recreate it later) <br>
   <br>
-  or 
+  or
   <br>
-  Clone from Git Bash / On the command line 
-  Open Git Bash 
+  Clone from Git Bash / On the command line
+  Open Git Bash
   >$ cd C: <br>
   >$ cd dev<br>
-  >$ git clone https://github.com/ElizaTWF/apiness.git <br>
+  >$ git clone https://github.com/ElizaTWF/APIness.git <br>
   >$ dir (to check the download) <br>
  <br>
- Delete the package.json (we will recreate it later) 
-
-→ Upgrade dev apps in tech stack (node, express, mocha etc) <br>
-→ Commit upgrade to git<br>
-<br>
-
-### Create a new package.json pointing at your git repo
-  Open the command prompt in the repo
-  Type: npm init
-  NPM will pick up the details of the application files installed into the folder and ask you to provide some details.
-  Change the following answers: 
-  Change the author to your name 
-  Regarding the URL - change the ElizaTWF to your GitHub name 
-  Click return to create the file 
-  When the prompts apprear, ensure that you point the git repo at your git repo.
-
-OR for those that like to do things for themselves, you can build the APIs yourself using the code and instructions from here: 
-https://drive.google.com/open?id=1DoEtDIBq4cNwWA_hz1jHUPNyDANZ5tq0
+  The repo already includes a `package.json` with all the dependencies the app needs - do not delete it.
 
 ### Upgrade the apps in your dev environment:
 From the command prompt in your apiness folder:
 npm install
-npm install node
 npm install express
 npm install ejs
 npm install nodemon
 npm install body-parser
-npm install mongo-db
+npm install mongodb
+npm install dotenv
+npm install cookie-parser
+npm install csrf-csrf
+npm install express-rate-limit
+npm install express-basic-auth
+
+### Set up your environment variables
+The app uses a `.env` file to keep secrets out of your code.
+Never commit this file to git - it is already listed in `.gitignore`.
+
+Create a `.env` file in the root of your project.
+On Windows you cannot create a dotfile in Explorer - use your code editor or run this in the command prompt:
+  copy nul .env
+
+Then open the file and add the following:
+
+```
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/
+DB_NAME=<your database name>
+COLLECTION_NAME=<your collection name>
+CSRF_SECRET=<a long random string>
+APP_USER=<your chosen username>
+APP_PASSWORD=<your chosen password>
+```
+
+Replace each `<value>` with your own details.
+For `MONGODB_URI`, paste in the connection string you copied from MongoDB Atlas.
+For `DB_NAME` and `COLLECTION_NAME`, use the names you set up in Atlas - if you are following this tutorial from scratch, `crud` for both is fine.
+For `CSRF_SECRET`, use a long random string - the longer the better.
+For `APP_USER` and `APP_PASSWORD`, choose credentials to protect the quote submission form.
 
 ### What you get
 A very simple JS API with a basic front end that runs on http://localhost:3000
--> Appness API able to serve GET and POST requests
--> Front end for data entry 
+-> APIness API able to serve GET and POST requests
+-> Front end for data entry
+-> Input validation on all form submissions
+-> CSRF protection on the POST form
+-> Rate limiting on quote submissions (20 per IP per 15 minutes)
+-> HTTP Basic Auth protecting the submission form
 
 
-### Files in your app 
+### Files in your app
 TBC
 
 
-### Run tests 
-From the command line - 
+### Security notes
+A number of security improvements have been made to this app:
+
+**Input validation**
+The `POST /quotes` route now checks that both `name` and `quote` are present, are strings, and are not empty.
+Only those two fields are saved to the database - any other fields sent in the request are ignored.
+
+**CSRF protection**
+The quote submission form includes a hidden CSRF token generated by the `csrf-csrf` package.
+Any POST request without a valid matching token is rejected with a 403.
+
+**Rate limiting**
+The `POST /quotes` route is limited to 20 submissions per IP address per 15 minutes using `express-rate-limit`.
+Exceeding this returns a 429 response.
+
+**Authentication**
+The `POST /quotes` route requires HTTP Basic Auth.
+The browser will prompt for a username and password before the form can be submitted.
+Credentials are set via `APP_USER` and `APP_PASSWORD` in your `.env` file.
 
 
-### Run tests to fail 
+### Run the app
+Once everything is set up, start the app from the command prompt in your apiness folder:
 
-#### Ignore 
-node_modules are ignored by git => You will have to install node to make this suite run
+To run normally:
+  npm start
+
+To run in development mode (auto-restarts when you save changes):
+  npm run dev
+
+Open your browser and go to http://localhost:3000 - you should see the quotes page.
+
+#### Ignore
+node_modules are ignored by git => You will have to run npm install to set up the app before running it
