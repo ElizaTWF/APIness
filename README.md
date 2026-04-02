@@ -55,7 +55,6 @@ npm install
 npm install express
 npm install ejs
 npm install nodemon
-npm install body-parser
 npm install mongodb
 npm install dotenv
 npm install cookie-parser

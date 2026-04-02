@@ -1,7 +1,6 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
-const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const { doubleCsrf } = require('csrf-csrf')
 const rateLimit = require('express-rate-limit')
@@ -16,27 +15,30 @@ const { generateToken, doubleCsrfProtection } = doubleCsrf({
 
 var db
 
-MongoClient.connect(process.env.MONGODB_URI, { useNewUrlParser: true },
-(err, client) => {
-  if (err) return console.log(err)
+async function start() {
+  const client = await MongoClient.connect(process.env.MONGODB_URI)
   db = client.db(process.env.DB_NAME)
 
   app.listen(process.env.PORT || 3000, () => {
     console.log('listening on 3000')
   })
-})
+}
 
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json())
+start().catch(err => console.log(err))
+
+app.use(express.urlencoded({extended: true}))
+app.use(express.json())
 app.use(cookieParser())
 app.use(express.static('public'))
 app.set('view engine', 'ejs')
 
-app.get('/', (req, res) => {
-  db.collection(process.env.COLLECTION_NAME).find().toArray((err, result) => {
-    if (err) return res.status(500).send('Error retrieving quotes.')
+app.get('/', async (req, res) => {
+  try {
+    const result = await db.collection(process.env.COLLECTION_NAME).find().toArray()
     res.render('index.ejs', { crud: result, csrfToken: generateToken(req, res) })
-  })
+  } catch (err) {
+    res.status(500).send('Error retrieving quotes.')
+  }
 })
 
 const auth = basicAuth({
@@ -50,7 +52,7 @@ const submitLimiter = rateLimit({
   message: 'Too many submissions, please try again later.',
 })
 
-app.post('/quotes', auth, submitLimiter, doubleCsrfProtection, (req, res) => {
+app.post('/quotes', auth, submitLimiter, doubleCsrfProtection, async (req, res) => {
   const name = typeof req.body.name === 'string' ? req.body.name.trim() : ''
   const quote = typeof req.body.quote === 'string' ? req.body.quote.trim() : ''
 
@@ -58,14 +60,16 @@ app.post('/quotes', auth, submitLimiter, doubleCsrfProtection, (req, res) => {
     return res.status(400).send('Name and quote are required.')
   }
 
-  db.collection(process.env.COLLECTION_NAME).insertOne({ name, quote }, (err, result) => {
-    if (err) return res.status(500).send('Error saving quote.')
+  try {
+    await db.collection(process.env.COLLECTION_NAME).insertOne({ name, quote })
     console.log('saved to database')
     res.redirect('/')
-  })
+  } catch (err) {
+    res.status(500).send('Error saving quote.')
+  }
 })
 
-app.put('/quotes', auth, doubleCsrfProtection, (req, res) => {
+app.put('/quotes', auth, doubleCsrfProtection, async (req, res) => {
   const id = typeof req.body.id === 'string' ? req.body.id.trim() : ''
   const name = typeof req.body.name === 'string' ? req.body.name.trim() : ''
   const quote = typeof req.body.quote === 'string' ? req.body.quote.trim() : ''
@@ -78,14 +82,16 @@ app.put('/quotes', auth, doubleCsrfProtection, (req, res) => {
     return res.status(400).send('Invalid id.')
   }
 
-  db.collection(process.env.COLLECTION_NAME)
-  .findOneAndUpdate({_id: new ObjectId(id)}, {
-    $set: { name, quote }
-  }, {
-    sort: {_id: -1},
-    upsert: true
-  }, (err, _result) => {
-    if (err) return res.status(500).send('Error updating quote.')
+  try {
+    await db.collection(process.env.COLLECTION_NAME)
+    .findOneAndUpdate({_id: new ObjectId(id)}, {
+      $set: { name, quote }
+    }, {
+      sort: {_id: -1},
+      upsert: true
+    })
     res.send('updated')
-  })
+  } catch (err) {
+    res.status(500).send('Error updating quote.')
+  }
 })
